@@ -4,7 +4,8 @@ import json
 
 
 class P2PProtocol(Protocol):
-    def __init__(self):
+    def __init__(self, factory):
+        self.factory = factory
         self.state = "HELLO"
         self.remote_node_id = None
 

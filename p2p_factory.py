@@ -10,3 +10,10 @@ class P2PFactory(Factory):
     def startFactory(self):
         self.node_id = Helper.generate_node_id()
         self.peers = {}
+        print('Factory started')
+
+    def stopFactory(self):
+        print('Factory stopped')
+
+    def buildProtocol(self, addr):
+        return P2PProtocol(self)
