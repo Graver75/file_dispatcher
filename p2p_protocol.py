@@ -14,7 +14,7 @@ class P2PProtocol(Protocol):
         self.last_ping = None
 
     def connectionMade(self):
-        print('Connection made from', self.transport.getHost())
+        print('Connection made from', self.transport.getPeer())
         self.send_hello()
 
     # TODO: fix reason
@@ -48,7 +48,7 @@ class P2PProtocol(Protocol):
             self.lc_ping.start(60)
 
     def send_hello(self):
-        hello = json.dumps({'node_id': self.factory.node_id, 'msgtype': 'hello'})
+        hello = json.dumps({'node_id': self.factory.node_id, 'msgtype': 'HELLO'})
         self.transport.write(bytes(hello + '\n', 'utf8'))
 
     def send_ping(self):
