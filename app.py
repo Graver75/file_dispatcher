@@ -4,11 +4,15 @@ from twisted.internet import endpoints, reactor
 from p2p_factory import P2PFactory
 from p2p_protocol import P2PProtocol
 
+BOOTSTRAP_LIST = sys.argv[2:]
+print(BOOTSTRAP_LIST)
+
 # server
 endpoint = endpoints.TCP4ServerEndpoint(reactor, int(sys.argv[1]))
 endpoint.listen(P2PFactory())
 
 # client
-point = endpoints.TCP4ClientEndpoint(reactor, "localhost", int(sys.argv[1]))
-d = endpoints.connectProtocol(point, P2PProtocol(factory=P2PFactory))
+for port in BOOTSTRAP_LIST:
+    point = endpoints.TCP4ClientEndpoint(reactor, "localhost", int(port))
+    d = endpoints.connectProtocol(point, P2PProtocol)
 reactor.run()
