@@ -4,6 +4,9 @@ from time import time
 
 import json
 
+RECOVERY_DELAY = 120
+PING_INTERVAL = 60
+
 
 class P2PProtocol(Protocol):
     def __init__(self, factory):
@@ -11,10 +14,11 @@ class P2PProtocol(Protocol):
         self.state = "HELLO"
         self.remote_node_id = None
         self.lc_ping = LoopingCall(self.send_ping)
-        self.last_ping = None
+        self.last_ping = 0
 
     def connectionMade(self):
         print('Connection made from', self.transport.getPeer())
+        self.last_ping = time()
         self.send_hello()
 
     # TODO: fix reason
@@ -45,16 +49,19 @@ class P2PProtocol(Protocol):
         else:
             print(self.remote_node_id, 'connected')
             self.factory.peers[self.remote_node_id] = self.transport.getPeer()
-            self.lc_ping.start(60)
+            self.lc_ping.start(PING_INTERVAL)
 
     def send_hello(self):
         hello = json.dumps({'node_id': self.factory.node_id, 'msgtype': 'HELLO'})
         self.transport.write(bytes(hello + '\n', 'utf8'))
 
     def send_ping(self):
-        ping = json.dumps({'msgtype': 'ping'})
-        print("Pinging", self.remote_node_id)
-        self.transport.write(bytes(ping + '\n', 'utf8'))
+        if not self.is_dead_node():
+            ping = json.dumps({'msgtype': 'ping'})
+            print("Pinging", self.remote_node_id)
+            self.transport.write(bytes(ping + '\n', 'utf8'))
+        else:
+            self.transport.loseConnection()
 
     def send_pong(self):
         pong = json.dumps({'msgtype': 'pong'})
@@ -66,3 +73,6 @@ class P2PProtocol(Protocol):
     def handle_pong(self):
         print("Got pong from", self.remote_node_id)
         self.last_ping = time()
+
+    def is_dead_node(self):
+        return (time() - self.last_ping) > RECOVERY_DELAY
