@@ -26,10 +26,6 @@ class P2PProtocol(Protocol):
 
     def connectionMade(self):
         print('Connection made from', self.transport.getPeer())
-        remote_ip = self.transport.getPeer()
-        host_ip = self.transport.getHost()
-        self.remote_ip = remote_ip.host + ":" + str(remote_ip.port)
-        self.host_ip = host_ip.host + ":" + str(host_ip.port)
         self.last_ping = time()
         self.send_hello()
 
@@ -73,12 +69,17 @@ class P2PProtocol(Protocol):
         else:
             print(self.remote_node_id, ': hello')
             self.factory.peers[self.remote_node_id] = self
+            self.remote_ip = hello['ip'] + ':' + str(hello['port'])
             self.lc_ping.start(PING_INTERVAL)
             self.send_addr(mine=True)
             self.send_getaddr()
 
     def send_hello(self):
-        hello = json.dumps({'node_id': self.factory.node_id, 'msgtype': 'hello'})
+        hello = json.dumps({'node_id': self.factory.node_id,
+                            'msgtype': 'hello',
+                            'ip': self.transport.getHost().host,
+                            'port': self.factory.port
+                            })
         self.transport.write(bytes(hello + '\n', 'utf8'))
 
     def send_ping(self):
@@ -109,7 +110,7 @@ class P2PProtocol(Protocol):
 
     def send_addr(self, mine=False):
         if mine:
-            peers = [(self.host_ip, self.factory.node_id)]
+            peers = [(self.transport.getHost().host + ":" + str(self.factory.port), self.factory.node_id)]
         else:
             peers = [(self.factory.peers[peer].remote_ip, self.factory.peers[peer].remote_node_id)
                      for peer in self.factory.peers

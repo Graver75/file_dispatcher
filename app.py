@@ -4,13 +4,14 @@ from twisted.internet import endpoints, reactor
 from p2p_factory import P2PFactory
 from p2p_protocol import P2PProtocol
 
+PORT = int(sys.argv[1])
 BOOTSTRAP_LIST = sys.argv[2:]
 print(BOOTSTRAP_LIST)
 
-factory = P2PFactory()
+factory = P2PFactory(port=PORT)
 
 # server
-endpoint = endpoints.TCP4ServerEndpoint(reactor, int(sys.argv[1]))
+endpoint = endpoints.TCP4ServerEndpoint(reactor, int(PORT))
 endpoint.listen(factory)
 
 # client
