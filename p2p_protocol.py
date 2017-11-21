@@ -7,7 +7,8 @@ from time import time
 import json
 
 RECOVERY_DELAY = 120
-PING_INTERVAL = min(RECOVERY_DELAY, 60)
+PING_INTERVAL = min(RECOVERY_DELAY, 80)
+GETADDR_INTERVAL = 80
 
 
 class P2PProtocol(Protocol):
@@ -21,6 +22,7 @@ class P2PProtocol(Protocol):
         self.state = "HELLO"
         self.remote_node_id = None
         self.lc_ping = LoopingCall(self.send_ping)
+        self.lc_addr = LoopingCall(self.send_getaddr)
         self.last_ping = 0
         self.peer_type = peer_type
 
@@ -34,6 +36,7 @@ class P2PProtocol(Protocol):
         if self.remote_node_id in self.factory.peers:
             self.factory.peers.pop(self.remote_node_id)
             self.lc_ping.stop()
+            self.lc_addr.stop()
         print(self.remote_node_id, ': disconnected')
 
     def dataReceived(self, data):
@@ -71,14 +74,14 @@ class P2PProtocol(Protocol):
             self.factory.peers[self.remote_node_id] = self
             self.remote_ip = hello['ip'] + ':' + str(hello['port'])
             self.lc_ping.start(PING_INTERVAL)
+            self.lc_addr.start(GETADDR_INTERVAL)
             self.send_addr(mine=True)
-            self.send_getaddr()
 
     def send_hello(self):
         hello = json.dumps({'node_id': self.factory.node_id,
                             'msgtype': 'hello',
                             'ip': self.transport.getHost().host,
-                            'port': self.factory.port
+                            'port':self.factory.port
                             })
         self.transport.write(bytes(hello + '\n', 'utf8'))
 
