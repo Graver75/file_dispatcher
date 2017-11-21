@@ -37,7 +37,7 @@ class P2PProtocol(Protocol):
             self.factory.peers.pop(self.remote_node_id)
             self.lc_ping.stop()
             self.lc_addr.stop()
-        print(self.remote_node_id, ': disconnected')
+        print(self.remote_node_id, ':   disconnected')
 
     def dataReceived(self, data):
         for line in data.splitlines():
