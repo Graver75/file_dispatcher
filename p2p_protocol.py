@@ -7,8 +7,8 @@ from time import time
 import json
 
 RECOVERY_DELAY = 120
-PING_INTERVAL = min(RECOVERY_DELAY, 80)
-GETADDR_INTERVAL = 80
+PING_INTERVAL = min(RECOVERY_DELAY, 5)
+GETADDR_INTERVAL = 10
 
 
 class P2PProtocol(Protocol):
@@ -37,7 +37,7 @@ class P2PProtocol(Protocol):
             self.factory.peers.pop(self.remote_node_id)
             self.lc_ping.stop()
             self.lc_addr.stop()
-        print(self.remote_node_id, ':   disconnected')
+        print(self.remote_node_id, ': disconnected')
 
     def dataReceived(self, data):
         for line in data.splitlines():
