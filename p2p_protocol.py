@@ -3,8 +3,10 @@ from twisted.internet.task import LoopingCall
 from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 from twisted.internet import reactor
 from time import time
-
 import json
+
+from helper import Helper
+
 
 RECOVERY_DELAY = 120
 PING_INTERVAL = min(RECOVERY_DELAY, 5)
@@ -113,12 +115,13 @@ class P2PProtocol(Protocol):
 
     def send_addr(self, mine=False):
         if mine:
-            peers = [(self.transport.getHost().host + ":" + str(self.factory.port), self.factory.node_id)]
+            peers = [(Helper.get_local_ip() + ":" + str(self.factory.port), self.factory.node_id)]
         else:
             peers = [(self.factory.peers[peer].remote_ip, self.factory.peers[peer].remote_node_id)
                      for peer in self.factory.peers
                      if self.factory.peers[peer].peer_type == 0 and
-                     not self.is_dead_node(self.factory.peers[peer])]
+                     not self.is_dead_node(self.factory.peers[peer]) and
+                     self.factory.peers[peer].factory.node_id != self.factory.node_id]
         addr = json.dumps({"msgtype": "addr", "peers": peers})
         self.transport.write(bytes(addr + '\n', 'utf8'))
 
