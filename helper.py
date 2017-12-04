@@ -1,4 +1,5 @@
 import socket
+import json
 from uuid import uuid4
 
 
@@ -12,3 +13,7 @@ class Helper:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
         return s.getsockname()[0]
+
+    @staticmethod
+    def presend(mes):
+        return bytes(json.dumps(mes) + '\n', 'utf8')

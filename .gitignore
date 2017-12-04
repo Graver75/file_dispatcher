@@ -4,3 +4,5 @@ web/.idea
 web/node_modules
 web/static/*js
 web/static/*json
+*.pyc
+_trial_temp
