@@ -55,6 +55,10 @@ class P2PProtocol(Protocol):
                 self.handle_getaddr()
             elif msg_type == "addr":
                 self.handle_addr(line)
+            elif msg_type == "getfilenames":
+                self.handle_getfilenames()
+            elif msg_type == "filenames":
+                self.handle_filenames(line)
 
     def handle_addr(self, addr):
         addr = json.loads(addr)
@@ -73,6 +77,7 @@ class P2PProtocol(Protocol):
         else:
             print(self.remote_node_id, ': hello')
             self.factory.peers[self.remote_node_id] = self
+            self.factory.peers[self.remote_node_id].file_names = []
             self.remote_ip = hello['ip'] + ':' + str(hello['port'])
             self.lc_ping.start(PING_INTERVAL)
             self.lc_addr.start(GETADDR_INTERVAL)
@@ -121,3 +126,18 @@ class P2PProtocol(Protocol):
 
     def send_getaddr(self):
         self.transport.write(Helper.presend({"msgtype": "getaddr"}))
+
+    def send_getfilenames(self):
+        Helper.presend({"msgtype": "getfilenames"})
+
+    def handle_getfilenames(self):
+        self.send_file_names()
+
+    def send_file_names(self):
+        Helper.presend({"msgtype": "filenames", "filenames": self.factory.file_names})
+
+    def handle_filenames(self, filenames):
+        filenames = json.loads(filenames)
+        for file_name in filenames:
+            if file_name not in self.factory.peers[self.remote_node_id]:
+                self.factory.peers[self.remote_node_id].file_names.append(file_name)

@@ -1,5 +1,6 @@
 import socket
 import json
+import os
 from uuid import uuid4
 
 
@@ -17,3 +18,16 @@ class Helper:
     @staticmethod
     def presend(mes):
         return bytes(json.dumps(mes) + '\n', 'utf8')
+
+    @staticmethod
+    def get_MD5(file):
+        # TODO: implement
+        pass
+
+    @staticmethod
+    def get_stats(path):
+        pass
+
+    @staticmethod
+    def list_files(path):
+        return os.listdir(path=path)

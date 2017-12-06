@@ -14,6 +14,7 @@ class P2PFactory(Factory):
     def startFactory(self):
         self.node_id = Helper.generate_node_id()
         self.peers = {}
+        self.file_names = Helper.list_files()
         print('Factory: started')
 
     def stopFactory(self):
