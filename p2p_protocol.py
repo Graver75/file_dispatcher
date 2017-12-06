@@ -120,10 +120,10 @@ class P2PProtocol(Protocol):
             peers = [(self.factory.peers[peer].remote_ip, self.factory.peers[peer].remote_node_id)
                      for peer in self.factory.peers
                      if self.factory.peers[peer].peer_type == 0 and
-                     not self.is_dead_node(self.factory.peers[peer]) and
-                     self.factory.peers[peer].factory.node_id != self.factory.node_id]
+                     not self.is_dead_node(self.factory.peers[peer])]
         addr = json.dumps({"msgtype": "addr", "peers": peers})
         self.transport.write(bytes(addr + '\n', 'utf8'))
+        self.transport.write(Helper.presend({"msgtype": "addr", "peers": peers}))
 
     def send_getaddr(self):
         request = json.dumps({"msgtype": "getaddr"})
