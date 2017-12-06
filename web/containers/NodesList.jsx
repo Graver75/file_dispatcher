@@ -17,7 +17,11 @@ export default class NodesList extends React.Component {
         this.setState({nodes})
     }
     renderNodes() {
-        return this.state.nodes.map((node) => <li>node</li>)
+        let renderedNodes = [];
+        for (let node in this.state.nodes) {
+            renderedNodes.push(<li>{node}: {this.state.nodes[node]}</li>)
+        }
+        return renderedNodes
     }
     render() {
         return (

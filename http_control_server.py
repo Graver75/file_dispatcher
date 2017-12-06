@@ -26,4 +26,4 @@ class HTTPControlServer:
 
     @app.route('/api/nodes')
     def send_nodes(self, request):
-        return Helper.presend(([(node.remote_ip, node.remote_node_id) for node in self._factory.peers]))
+        return Helper.presend({node: self._factory.peers[node].remote_ip for node in self._factory.peers})

@@ -47,5 +47,9 @@ module.exports = {
 
     plugins: [
         new webpack.HotModuleReplacementPlugin()
-    ]
+    ],
+
+    resolve: {
+        extensions: ['.js', '.jsx']
+    }
 };
