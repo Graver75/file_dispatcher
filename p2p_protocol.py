@@ -7,7 +7,6 @@ import json
 
 from helper import Helper
 
-
 RECOVERY_DELAY = 120
 PING_INTERVAL = min(RECOVERY_DELAY, 5)
 GETADDR_INTERVAL = 10
@@ -80,24 +79,21 @@ class P2PProtocol(Protocol):
             self.send_addr(mine=True)
 
     def send_hello(self):
-        hello = json.dumps({'node_id': self.factory.node_id,
-                            'msgtype': 'hello',
-                            'ip': self.transport.getHost().host,
-                            'port':self.factory.port
-                            })
-        self.transport.write(bytes(hello + '\n', 'utf8'))
+        self.transport.write(Helper.presend({'node_id': self.factory.node_id,
+                                             'msgtype': 'hello',
+                                             'ip': self.factory.ip,
+                                             'port': self.factory.port
+                                             }))
 
     def send_ping(self):
         if not self.is_dead_node(self):
-            ping = json.dumps({'msgtype': 'ping'})
             print(self.remote_node_id, ": ping")
-            self.transport.write(bytes(ping + '\n', 'utf8'))
+            self.transport.write(Helper.presend({'msgtype': 'ping'}))
         else:
             self.transport.loseConnection()
 
     def send_pong(self):
-        pong = json.dumps({'msgtype': 'pong'})
-        self.transport.write(bytes(pong + '\n', 'utf8'))
+        self.transport.write(Helper.presend({'msgtype': 'pong'}))
 
     def handle_ping(self):
         self.send_pong()
@@ -115,7 +111,7 @@ class P2PProtocol(Protocol):
 
     def send_addr(self, mine=False):
         if mine:
-            peers = [(Helper.get_local_ip() + ":" + str(self.factory.port), self.factory.node_id)]
+            peers = [(self.factory.ip + ":" + str(self.factory.port), self.factory.node_id)]
         else:
             peers = [(self.factory.peers[peer].remote_ip, self.factory.peers[peer].remote_node_id)
                      for peer in self.factory.peers
@@ -126,5 +122,4 @@ class P2PProtocol(Protocol):
         self.transport.write(Helper.presend({"msgtype": "addr", "peers": peers}))
 
     def send_getaddr(self):
-        request = json.dumps({"msgtype": "getaddr"})
-        self.transport.write(bytes(request + '\n', 'utf8'))
+        self.transport.write(Helper.presend({"msgtype": "getaddr"}))

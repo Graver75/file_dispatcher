@@ -9,6 +9,7 @@ class P2PFactory(Factory):
 
     def __init__(self, port):
         self.port = port
+        self.ip = Helper.get_local_ip()
 
     def startFactory(self):
         self.node_id = Helper.generate_node_id()
