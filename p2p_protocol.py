@@ -10,6 +10,7 @@ from helper import Helper
 RECOVERY_DELAY = 120
 PING_INTERVAL = min(RECOVERY_DELAY, 5)
 GETADDR_INTERVAL = 10
+GETFILENAMES_INTERVAL = 30
 
 
 class P2PProtocol(Protocol):
@@ -24,6 +25,7 @@ class P2PProtocol(Protocol):
         self.remote_node_id = None
         self.lc_ping = LoopingCall(self.send_ping)
         self.lc_addr = LoopingCall(self.send_getaddr)
+        self.lc_filenames = LoopingCall(self.send_getfilenames)
         self.last_ping = 0
         self.peer_type = peer_type
 
@@ -81,7 +83,9 @@ class P2PProtocol(Protocol):
             self.remote_ip = hello['ip'] + ':' + str(hello['port'])
             self.lc_ping.start(PING_INTERVAL)
             self.lc_addr.start(GETADDR_INTERVAL)
+            self.lc_filenames.start(GETFILENAMES_INTERVAL)
             self.send_addr(mine=True)
+            self.send_getfilenames()
 
     def send_hello(self):
         self.transport.write(Helper.presend({'node_id': self.factory.node_id,
@@ -139,5 +143,5 @@ class P2PProtocol(Protocol):
     def handle_filenames(self, filenames):
         filenames = json.loads(filenames)
         for file_name in filenames:
-            if file_name not in self.factory.peers[self.remote_node_id]:
+            if file_name not in self.factory.peers[self.remote_node_id].file_names:
                 self.factory.peers[self.remote_node_id].file_names.append(file_name)

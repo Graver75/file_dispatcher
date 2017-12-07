@@ -78,6 +78,7 @@ def connectionMade(ftpClient):
     # Get the current working directory
     ftpClient.pwd().addCallbacks(success, fail)
 
+    """
     # Get a detailed listing of the current directory
     fileList = FTPFileListProtocol()
     d = ftpClient.list('.', fileList)
@@ -95,6 +96,5 @@ def connectionMade(ftpClient):
     # Retrieve file
     d = ftpClient.retrieveFile('/tex.txt', proto)
     d.addCallbacks(getFile, fail, callbackArgs=(proto,))
-
-
-run()
+    """
+    return ftpClient
