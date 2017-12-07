@@ -2,6 +2,7 @@ from twisted.internet.protocol import Factory
 
 from p2p_protocol import P2PProtocol
 from helper import Helper
+from config import FILE_DIRECTORY
 
 
 class P2PFactory(Factory):
@@ -14,7 +15,7 @@ class P2PFactory(Factory):
     def startFactory(self):
         self.node_id = Helper.generate_node_id()
         self.peers = {}
-        self.file_names = Helper.list_files()
+        self.file_names = Helper.list_files(FILE_DIRECTORY)
         print('Factory: started')
 
     def stopFactory(self):

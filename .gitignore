@@ -7,3 +7,4 @@ web/static/*json
 *.pyc
 _trial_temp
 /pub
+/pass.dat
