@@ -5,7 +5,7 @@ export default class Ajax {
         return prefetch('/api/nodes')
     }
     static getFiles(id) {
-        return prefetch(`/api/nodes/files/${id}`)
+        return prefetch(`/api/nodes/${id}/files`)
     }
     static getNodeInfo(id) {
         return id ? prefetch(`/api/nodes/${id}`) : prefetch(`/api/info`)

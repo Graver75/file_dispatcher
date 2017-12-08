@@ -2,6 +2,9 @@ import socket
 import json
 import os
 from uuid import uuid4
+from io import BytesIO
+
+from twisted.internet.protocol import Protocol
 
 
 class Helper:
@@ -31,3 +34,25 @@ class Helper:
     @staticmethod
     def list_files(path):
         return os.listdir(path=path)
+
+    @staticmethod
+    def retrieve_file_from_ftp(name, ftp_client):
+        proto = BufferingProtocol()
+        d = ftp_client.retrieveFile(name, proto)
+        d.addCallbacks(show_file, fail, callbackArgs=(proto,))
+
+
+
+class BufferingProtocol(Protocol):
+    """Simple utility class that holds all data written to it in a buffer."""
+    def __init__(self):
+        self.buffer = BytesIO()
+
+    def dataReceived(self, data):
+        self.buffer.write(data)
+
+def show_file(result, buf):
+    return buf.buffer.getvalue()
+
+def fail(result, f):
+    pass

@@ -1,16 +1,8 @@
 from twisted.protocols.ftp import FTPClient
-from twisted.internet.protocol import Protocol, ClientCreator
+from twisted.internet.protocol import ClientCreator
 from twisted.internet import reactor
-from io import BytesIO
 
 
-class BufferingProtocol(Protocol):
-    """Simple utility class that holds all data written to it in a buffer."""
-    def __init__(self):
-        self.buffer = BytesIO()
-
-    def dataReceived(self, data):
-        self.buffer.write(data)
 
 def fail(error):
     print('Failed.  Error was:')

@@ -30,10 +30,11 @@ class HTTPControlServer:
     def send_own_filenames(self, request):
         return Helper.presend(self._factory.file_names)
 
-    @app.route('/api/nodes/files/<string:id>')
+    @app.route('/api/nodes/<string:id>/files')
     def send_filenames(self, request, id):
         return Helper.presend(self._factory.peers[id].remote_file_names)
 
-    @app.route('/api/files/<string:id>/download')
-    def fetch_file(self, request, id):
-        pass
+    @app.route('/api/nodes/<string:id>/files/<string:name>')
+    def fetch_file(self, request, id, name):
+        Helper.retrieve_file_from_ftp(name, self._factory.peers[id].remote_ftp_client)
+        return request.setResponseCode(200)
