@@ -132,13 +132,13 @@ class P2PProtocol(Protocol):
         self.transport.write(Helper.presend({"msgtype": "getaddr"}))
 
     def send_getfilenames(self):
-        Helper.presend({"msgtype": "getfilenames"})
+        self.transport.write(Helper.presend({"msgtype": "getfilenames"}))
 
     def handle_getfilenames(self):
         self.send_file_names()
 
     def send_file_names(self):
-        Helper.presend({"msgtype": "filenames", "filenames": self.factory.file_names})
+        self.transport.write(Helper.presend({"msgtype": "filenames", "filenames": self.factory.file_names}))
 
     def handle_filenames(self, filenames):
         filenames = json.loads(filenames)
