@@ -1,5 +1,7 @@
 import React from 'react';
 
+import FilesList from './FilesList'
+
 import Ajax from '../utils/ajax'
 
 export default class NodesList extends React.Component {
@@ -19,7 +21,12 @@ export default class NodesList extends React.Component {
     renderNodes() {
         let renderedNodes = [];
         for (let node in this.state.nodes) {
-            renderedNodes.push(<li>{node}: {this.state.nodes[node]}</li>)
+            renderedNodes.push(
+                <li>
+                    {node}: {this.state.nodes[node]}
+                    <FilesList id={node}/>
+                </li>
+            )
         }
         return renderedNodes
     }

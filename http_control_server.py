@@ -30,6 +30,6 @@ class HTTPControlServer:
     def send_own_filenames(self, request):
         return Helper.presend(self._factory.file_names)
 
-    @app.route('/api/nodes/<string:id>')
+    @app.route('/api/files/<string:id>')
     def send_filenames(self, request, id):
         return Helper.presend(self._factory.peers[id].remote_file_names)
