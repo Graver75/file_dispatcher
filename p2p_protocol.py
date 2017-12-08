@@ -6,6 +6,7 @@ from time import time
 import json
 
 from helper import Helper
+from ftp_client import run
 
 RECOVERY_DELAY = 120
 PING_INTERVAL = min(RECOVERY_DELAY, 5)
@@ -24,6 +25,7 @@ class P2PProtocol(Protocol):
         self.state = "HELLO"
         self.remote_node_id = None
         self.remote_file_names = []
+        self.remote_ftp_client = None
         self.lc_ping = LoopingCall(self.send_ping)
         self.lc_addr = LoopingCall(self.send_getaddr)
         self.lc_filenames = LoopingCall(self.send_getfilenames)
@@ -86,6 +88,7 @@ class P2PProtocol(Protocol):
             self.lc_filenames.start(GETFILENAMES_INTERVAL)
             self.send_addr(mine=True)
             self.send_getfilenames()
+            self.establish_ftp_connection()
 
     def send_hello(self):
         self.transport.write(Helper.presend({'node_id': self.factory.node_id,
@@ -146,3 +149,14 @@ class P2PProtocol(Protocol):
         for file_name in filenames:
             if file_name not in self.factory.peers[self.remote_node_id].remote_file_names:
                 self.factory.peers[self.remote_node_id].remote_file_names.append(file_name)
+
+    def establish_ftp_connection(self):
+        host, port = self.remote_ip.split(':')
+        run({'host': host, 'port': 9021}, self.save_ftp_connection)
+
+    def save_ftp_connection(self, ftp_client):
+        print('FTP connection established')
+        self.remote_ftp_client = ftp_client
+
+    def handle_failed_ftp_connection(self, f):
+        print('FTP connection failed', f)

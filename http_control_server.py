@@ -33,3 +33,7 @@ class HTTPControlServer:
     @app.route('/api/nodes/files/<string:id>')
     def send_filenames(self, request, id):
         return Helper.presend(self._factory.peers[id].remote_file_names)
+
+    @app.route('/api/files/<string:id>/download')
+    def fetch_file(self, request, id):
+        pass
