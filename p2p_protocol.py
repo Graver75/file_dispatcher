@@ -143,5 +143,5 @@ class P2PProtocol(Protocol):
     def handle_filenames(self, filenames):
         filenames = json.loads(filenames)
         for file_name in filenames:
-            if file_name not in self.factory.peers.remote_file_names:
+            if file_name not in self.factory.peers[self.remote_node_id].remote_file_names:
                 self.factory.peers[self.remote_node_id].remote_file_names.append(file_name)
