@@ -23,6 +23,7 @@ class P2PProtocol(Protocol):
         self.factory = factory
         self.state = "HELLO"
         self.remote_node_id = None
+        self.remote_file_names = []
         self.lc_ping = LoopingCall(self.send_ping)
         self.lc_addr = LoopingCall(self.send_getaddr)
         self.lc_filenames = LoopingCall(self.send_getfilenames)
@@ -79,7 +80,6 @@ class P2PProtocol(Protocol):
         else:
             print(self.remote_node_id, ': hello')
             self.factory.peers[self.remote_node_id] = self
-            self.factory.peers[self.remote_node_id]['file_names'] = []
             self.remote_ip = hello['ip'] + ':' + str(hello['port'])
             self.lc_ping.start(PING_INTERVAL)
             self.lc_addr.start(GETADDR_INTERVAL)
@@ -143,5 +143,5 @@ class P2PProtocol(Protocol):
     def handle_filenames(self, filenames):
         filenames = json.loads(filenames)
         for file_name in filenames:
-            if file_name not in self.factory.peers[self.remote_node_id]['file_names']:
-                self.factory.peers[self.remote_node_id]['file_names'].append(file_name)
+            if file_name not in self.factory.peers.remote_file_names:
+                self.factory.peers[self.remote_node_id].remote_file_names.append(file_name)
