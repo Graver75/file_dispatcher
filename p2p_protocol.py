@@ -141,7 +141,8 @@ class P2PProtocol(Protocol):
         self.transport.write(Helper.presend({"msgtype": "filenames", "filenames": self.factory.file_names}))
 
     def handle_filenames(self, filenames):
-        filenames = json.loads(filenames)
+        msg = json.loads(filenames)
+        filenames = msg['filenames']
         for file_name in filenames:
             if file_name not in self.factory.peers[self.remote_node_id].remote_file_names:
                 self.factory.peers[self.remote_node_id].remote_file_names.append(file_name)
