@@ -39,9 +39,21 @@ class Helper:
     def retrieve_file_from_ftp(name, ftp_client):
         proto = BufferingProtocol()
         d = ftp_client.retrieveFile(name, proto)
-        d.addCallbacks(show_file, fail, callbackArgs=(proto,))
+        d.addCallbacks(Helper.retrieve_file_from_bufproto, Helper.fail_handler, callbackArgs=(proto, name,))
 
+    @staticmethod
+    def retrieve_file_from_bufproto(result, proto, name):
+        # TODO: decoding
+        data = proto.buffer.getvalue()
+        f = open('pub/' + name, 'w+')
+        f.close()
+        f = open('pub/' + name, 'wb')
+        f.write(data)
+        f.close()
 
+    @staticmethod
+    def fail_handler(f):
+        print("FAILED", f)
 
 class BufferingProtocol(Protocol):
     """Simple utility class that holds all data written to it in a buffer."""
@@ -50,9 +62,3 @@ class BufferingProtocol(Protocol):
 
     def dataReceived(self, data):
         self.buffer.write(data)
-
-def show_file(result, buf):
-    return buf.buffer.getvalue()
-
-def fail(result, f):
-    pass
