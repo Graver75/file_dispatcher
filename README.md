@@ -6,6 +6,7 @@ REQUIREMENTS:
 3) npm v5^
 
 HOW TO:
+
 ```npm install```
 installing requirements, run in web directory 
 
