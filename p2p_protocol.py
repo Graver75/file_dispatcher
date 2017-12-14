@@ -7,11 +7,7 @@ import json
 
 from helper import Helper
 from ftp_client import run
-
-RECOVERY_DELAY = 120
-PING_INTERVAL = min(RECOVERY_DELAY, 5)
-GETADDR_INTERVAL = 10
-GETFILENAMES_INTERVAL = 30
+from config import RECOVERY_DELAY, PING_INTERVAL, GETADDR_INTERVAL, GETFILENAMES_INTERVAL
 
 
 class P2PProtocol(Protocol):
