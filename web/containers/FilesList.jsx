@@ -9,19 +9,25 @@ export default class FilesList extends React.Component {
         this.state = {
             files: [],
             owner: props.id
-        }
+        };
+
+        this.handleClick = this.handleClick.bind(this)
     }
     async componentWillMount() {
         //TODO: error handler
         let res = await Ajax.getFiles(this.state.owner);
         let files = await res.json();
-        this.setState({files})
+        this.setState({files});
+    }
+    handleClick(name) {
+        evt.preventDefault();
+        Ajax.getFile(this.state.owner, name)
     }
     renderFilesInfo() {
         let renderedFilesInfo = [];
         for (let fileInfo of this.state.files) {
             renderedFilesInfo.push(
-                <li>{fileInfo}</li>
+                <li onClick={this.handleClick}>{fileInfo}</li>
             )
         }
         return renderedFilesInfo

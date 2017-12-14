@@ -13,7 +13,7 @@ export default class Ajax {
     static getFileInfo(id) {
         return prefetch(`/api/files/${id}`)
     }
-    static getFile(id) {
-        return prefetch(`/api/files/${id}/download`)
+    static getFile(id, name) {
+        return prefetch(`/api/nodes/${id}/files/${name}`)
     }
 }
