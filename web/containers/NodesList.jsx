@@ -21,12 +21,14 @@ export default class NodesList extends React.Component {
     renderNodes() {
         let renderedNodes = [];
         for (let node in this.state.nodes) {
-            renderedNodes.push(
-                <li>
-                    {node}: {this.state.nodes[node]}
-                    <FilesList id={node}/>
-                </li>
-            )
+            if (this.state.nodes.hasOwnProperty(node)) {
+                renderedNodes.push(
+                    <li>
+                        {node}: {this.state.nodes[node]}
+                        <FilesList id={node}/>
+                    </li>
+                )
+            }
         }
         return renderedNodes
     }
