@@ -87,7 +87,7 @@ class P2PProtocol(Protocol):
             self.establish_ftp_connection()
 
     def send_hello(self):
-        self.transport.write(Helper.presend({'node_id': self.factory.node_id,
+        self.send_msg(Helper.presend({'node_id': self.factory.node_id,
                                              'msgtype': 'hello',
                                              'ip': self.factory.ip,
                                              'port': self.factory.port
@@ -96,12 +96,12 @@ class P2PProtocol(Protocol):
     def send_ping(self):
         if not self.is_dead_node(self):
             print(self.remote_node_id, ": ping")
-            self.transport.write(Helper.presend({'msgtype': 'ping'}))
+            self.send_msg(Helper.presend({'msgtype': 'ping'}))
         else:
             self.transport.loseConnection()
 
     def send_pong(self):
-        self.transport.write(Helper.presend({'msgtype': 'pong'}))
+        self.send_msg(Helper.presend({'msgtype': 'pong'}))
 
     def handle_ping(self):
         self.send_pong()
@@ -125,19 +125,19 @@ class P2PProtocol(Protocol):
                      for peer in self.factory.peers
                      if self.factory.peers[peer].peer_type == 0 and
                      not self.is_dead_node(self.factory.peers[peer])]
-        self.transport.write(Helper.presend({"msgtype": "addr", "peers": peers}))
+        self.send_msg(Helper.presend({"msgtype": "addr", "peers": peers}))
 
     def send_getaddr(self):
-        self.transport.write(Helper.presend({"msgtype": "getaddr"}))
+        self.send_msg(Helper.presend({"msgtype": "getaddr"}))
 
     def send_getfilenames(self):
-        self.transport.write(Helper.presend({"msgtype": "getfilenames"}))
+        self.send_msg(Helper.presend({"msgtype": "getfilenames"}))
 
     def handle_getfilenames(self):
         self.send_file_names()
 
     def send_file_names(self):
-        self.transport.write(Helper.presend({"msgtype": "filenames", "filenames": self.factory.file_names}))
+        self.send_msg(Helper.presend({"msgtype": "filenames", "filenames": self.factory.file_names}))
 
     def handle_filenames(self, filenames):
         msg = json.loads(filenames)
@@ -156,3 +156,6 @@ class P2PProtocol(Protocol):
 
     def handle_failed_ftp_connection(self, f):
         print('FTP connection failed', f)
+
+    def send_msg(self, msg):
+        self.transport.write(msg)
