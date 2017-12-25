@@ -29,7 +29,7 @@ class P2PProtocol(Protocol):
         self.peer_type = peer_type
 
         self.msgs = {
-            "HELLO": self.handle_hello,
+            "hello": self.handle_hello,
             "ping": self.handle_ping,
             "pong": self.handle_pong,
             "get_addr": self.handle_getaddr,
@@ -101,10 +101,10 @@ class P2PProtocol(Protocol):
     def send_pong(self):
         self.send_msg(Helper.presend({'msgtype': 'pong'}))
 
-    def handle_ping(self):
+    def handle_ping(self, msg):
         self.send_pong()
 
-    def handle_pong(self):
+    def handle_pong(self, msg):
         print(self.remote_node_id, ": pong")
         self.last_ping = time()
 
@@ -112,7 +112,7 @@ class P2PProtocol(Protocol):
     def is_dead_node(node):
         return (time() - node.last_ping) > RECOVERY_DELAY
 
-    def handle_getaddr(self):
+    def handle_getaddr(self, msg):
         self.send_addr()
 
     def send_addr(self, mine=False):
@@ -131,7 +131,7 @@ class P2PProtocol(Protocol):
     def send_getfilenames(self):
         self.send_msg(Helper.presend({"msgtype": "getfilenames"}))
 
-    def handle_getfilenames(self):
+    def handle_getfilenames(self, msg):
         self.send_file_names()
 
     def send_file_names(self):
