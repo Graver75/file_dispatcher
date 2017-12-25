@@ -19,8 +19,8 @@ export default class FilesList extends React.Component {
         let files = await res.json();
         this.setState({files});
     }
-    handleClick(evt) {
-        return (name) => {
+    handleClick(name) {
+        return (evt) => {
             evt.preventDefault();
             Ajax.getFile(this.state.owner, name)
         }
