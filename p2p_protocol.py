@@ -28,6 +28,16 @@ class P2PProtocol(Protocol):
         self.last_ping = 0
         self.peer_type = peer_type
 
+        self.msgs = {
+            "HELLO": self.handle_hello,
+            "ping": self.handle_ping,
+            "pong": self.handle_pong,
+            "get_addr": self.handle_getaddr,
+            "addr": self.handle_addr,
+            "getfilenames": self.handle_getfilenames,
+            "filenames": self.handle_filenames
+        }
+
     def connectionMade(self):
         print('Connection made from', self.transport.getPeer())
         self.last_ping = time()
@@ -45,21 +55,8 @@ class P2PProtocol(Protocol):
         for line in data.splitlines():
             line = line.strip()
             msg_type = json.loads(line)["msgtype"]
-            if self.state == "HELLO" or msg_type == "HELLO":
-                self.handle_hello(line)
-                self.state = "READY"
-            elif msg_type == "ping":
-                self.handle_ping()
-            elif msg_type == "pong":
-                self.handle_pong()
-            elif msg_type == "getaddr":
-                self.handle_getaddr()
-            elif msg_type == "addr":
-                self.handle_addr(line)
-            elif msg_type == "getfilenames":
-                self.handle_getfilenames()
-            elif msg_type == "filenames":
-                self.handle_filenames(line)
+            if msg_type in self.msgs:
+                self.msgs[msg_type](line)
 
     def handle_addr(self, addr):
         addr = json.loads(addr)
@@ -70,6 +67,7 @@ class P2PProtocol(Protocol):
                 d = connectProtocol(point, P2PProtocol(factory=self.factory))
 
     def handle_hello(self, hello):
+        self.state = "READY"
         hello = json.loads(hello)
         self.remote_node_id = hello["node_id"]
         if self.remote_node_id == self.factory.node_id:
