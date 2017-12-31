@@ -58,7 +58,7 @@ const iterThroughDirs = function* (paths) {
         yield readDir(path)
     }
 };
-const getComponents = async function () {
+const getComponents = async () => {
     let iter = iterThroughDirs(await getPluginsDirs(PLUGINS_PATH));
     let components = [];
     for (let filesAwaited of iter) {
