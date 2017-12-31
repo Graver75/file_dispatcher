@@ -10,6 +10,7 @@ export default class AppContainer extends React.Component {
     render() {
         return (
             <main>
+                <PluginList/>
                 <NodeInfoComponent/>
                 <NodesList/>
             </main>
