@@ -69,6 +69,11 @@ const getComponents = async function () {
             }
         }
     }
+    return components
 };
 
-export default getComponents();
+module.exports = new Promise((resolve, reject) => {
+    (async() => {
+        resolve(await getComponents())
+    })()
+});
