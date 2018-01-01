@@ -74,6 +74,6 @@ const getComponents = async () => {
 
 module.exports = new Promise((resolve, reject) => {
     (async() => {
-        resolve(await getComponents())
+        resolve(getComponents())
     })()
 });
