@@ -28,9 +28,11 @@ const getAbsolutePath = (filePath) => {
 const isPluginDirectory = (fileName) => {
     return /plugin$/.test(fileName)
 };
+const removeExtension = (fileName) => {
+    return fileName.replace(/\.[^/.]+$/, "")
+};
 const isPluginComponent = (fileName) => {
-    fileName = fileName.split(path.sep).pop();
-    return COMPONENT_TYPES.includes(fileName.replace(/\.[^/.]+$/, ""))
+    return COMPONENT_TYPES.includes(getPluginComponentName(fileName))
 };
 const getPluginsDirs = async (rootDir) => {
   let dirs = [];
@@ -53,19 +55,32 @@ const getPluginsDirs = async (rootDir) => {
   }
   return dirs
 };
+const getPluginComponentName = (fileName) => {
+    return removeExtension(fileName.split(path.sep).pop());
+};
 const iterThroughDirs = function* (paths) {
     for (let path of paths) {
         yield readDir(path)
     }
 };
+const definePluginComponent = (fileName, arrOfComponents) => {
+    if (isPluginComponent(fileName)) {
+        // TODO: optimize
+        let componentName = getPluginComponentName(fileName);
+        arrOfComponents[componentName].push(fileName)
+    }
+};
 const getComponents = async () => {
     let iter = iterThroughDirs(await getPluginsDirs(PLUGINS_PATH));
-    let components = [];
+    let components = {};
+    COMPONENT_TYPES.forEach((elem) => {
+        components[elem] = []
+    });
     for (let filesAwaited of iter) {
         let fileNames = await filesAwaited;
         for (let fileName of fileNames) {
             if (isPluginComponent(fileName)) {
-                components.push(fileName)
+                definePluginComponent(fileName, components)
             }
         }
     }
