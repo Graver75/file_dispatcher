@@ -1,6 +1,5 @@
 /**
  * Script going through the directories, find React components
- * and exports them
  */
 const PLUGINS_PATH = __dirname;
 const COMPONENT_TYPES = [
