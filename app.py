@@ -8,7 +8,6 @@ from p2p_protocol import P2PProtocol
 from config import PORT, FILE_DIRECTORY, BOOTSTRAP_LIST, WANNA_CONTROL_SERVER
 
 
-
 factory = P2PFactory(port=PORT)
 
 # ftp
